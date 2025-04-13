@@ -21,10 +21,10 @@ class Deleteaudio(BaseModule):
         # Команда FFmpeg
         cmd = [
             'ffmpeg',
-            '-hwaccel', 'cuda',      # Включаем аппаратное ускорение NVIDIA
             '-i', input_path,
             '-c:v', 'libx264',   
-            '-preset', 'fast',        
+            '-preset', 'fast',
+            '-threads', '8',        
             '-an',
             output_path,
             '-y'  # Перезаписать выходной файл, если существует

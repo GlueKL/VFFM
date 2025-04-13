@@ -103,6 +103,7 @@ class Addvideo(BaseModule):
             '-filter_complex', filter_complex,
             '-c:v', 'libx264',  
             '-preset', 'fast'
+            '-threads', '8'
         ])
         
         # Добавляем опции для аудио

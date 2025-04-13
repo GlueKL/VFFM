@@ -57,14 +57,13 @@ class Watermark(BaseModule):
         # Команда FFmpeg
         cmd = [
             'ffmpeg',
-            '-hwaccel', 'cuda',      # Включаем аппаратное ускорение NVIDIA
             '-i', input_path,
             '-i', self.image_path,
             '-filter_complex', overlay_filter,
             '-map', '[out]',
-            '-c:v', 'h264_nvenc',    # Используем NVIDIA GPU для кодирования H.264
-            '-preset', 'p4',         # Подходящий NVENC пресет (от p1 до p7)
-            '-b:v', '5M',            # Битрейт видео для хорошего качества
+            '-c:v', 'libx264',   
+            '-preset', 'fast',
+            '-threads', '8',    
             '-map', '0:a?',
         ]
         
