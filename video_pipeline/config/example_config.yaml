@@ -1,0 +1,61 @@
+input: input.mp4
+output: output.mp4
+modules:
+- name: resize
+  params:
+    width: 100
+    height: 100
+    keep_aspect_ratio: false
+- name: watermark
+  params:
+    image_path: example_image_path
+    position: example_position
+    opacity: 1.0
+    scale: 1.0
+    audio_codec: example_audio_codec
+- name: deleteaudio
+  params: {}
+- name: crop
+  params:
+    position: example_position
+    width: 100
+    height: 100
+    x: 100
+    y: 100
+- name: pad
+  params:
+    width: 100
+    height: 100
+    position: example_position
+    color: example_color
+    image_path: example_image_path
+- name: addvideo
+  params:
+    video_path: example_video_path
+    position: example_position
+    x: 100
+    y: 100
+    width: 100
+    height: 100
+    scale: 1.0
+    alpha: 1.0
+    start_time: 1.0
+    end_time: 1.0
+    loop: false
+    mute: false
+- name: chromakey
+  params:
+    color: ['green', 'blue']
+    similarity: [0.1, 0.15]
+    blend: [0.0, 0.1]
+    yuv: true
+    overlay: green_screen.mp4
+    position: center
+    scale: 1.0
+    audio_codec: copy
+    mute_overlay: true
+- name: cut
+  params:
+    duration: 1.0
+    output_dir: parts
+    prefix: part_

@@ -1,0 +1,38 @@
+# Виртуальное окружение
+venv/
+env/
+ENV/
+workspace/
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Дистрибутивы
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Файлы IDE и редакторов
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Файлы логов
+*.log
+
+# Временные файлы
+*.png
+*.mp4
+temp_*.mp4
+temp/
+
+# Файлы операционной системы
+.DS_Store
+Thumbs.db 

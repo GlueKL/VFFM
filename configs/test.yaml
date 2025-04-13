@@ -1,0 +1,11 @@
+# Пример конфигурации для конвейера обработки видео
+input: "workspace/test/1.mp4"
+output: "workspace/test/output.mp4"
+
+# Список модулей обработки (применяются последовательно)
+modules:
+  - name: "utility.prepareforyt"
+
+
+
+
