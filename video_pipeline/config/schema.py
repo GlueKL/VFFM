@@ -314,6 +314,37 @@ MODULE_SCHEMAS = {
                 "description": "Толщина обводки"
             }
         }
+    },
+    "utility.module_wrapper": {
+        "type": "object",
+        "properties": {
+            "module_name": {
+                "type": "string",
+                "description": "Имя модуля для вызова"
+            },
+            "module_params": {
+                "type": "object",
+                "description": "Параметры для вызываемого модуля",
+                "additionalProperties": {
+                    "type": ["string", "number", "boolean", "object", "array"]
+                }
+            },
+            "custom_input": {
+                "type": "string",
+                "description": "Путь к входному видео (обязательный параметр)"
+            },
+            "custom_output": {
+                "type": "string",
+                "description": "Путь к выходному видео (обязательный параметр)"
+            },
+            "copy_to_pipeline": {
+                "type": "boolean",
+                "description": "Копировать результат в основной конвейер",
+                "default": False
+            }
+        },
+        "required": ["module_name", "custom_input", "custom_output"],
+        "description": "Модуль для вызова других модулей напрямую, может работать изолированно от основного конвейера"
     }
 }
 
