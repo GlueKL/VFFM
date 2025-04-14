@@ -25,14 +25,12 @@ class Watermark(BaseModule):
                 - position: Позиция водяного знака ('topleft', 'topright', 'bottomleft', 'bottomright', 'center')
                 - opacity: Прозрачность водяного знака (0.0-1.0)
                 - scale: Масштаб водяного знака относительно размера видео (0.0-1.0)
-                - audio_codec: Аудио кодек (по умолчанию 'copy' - сохранить оригинальный)
         """
         super().__init__(params)
         self.image_path = params.get('image_path')
         self.position = params.get('position', 'bottomright')
         self.opacity = params.get('opacity', 0.5)
         self.scale = params.get('scale', 0.2)
-        self.audio_codec = params.get('audio_codec', 'copy')
         
         if not self.image_path:
             raise ValueError("Не указан путь к изображению водяного знака")
@@ -65,17 +63,8 @@ class Watermark(BaseModule):
             '-preset', 'fast',
             '-threads', '8',    
             '-map', '0:a?',
+            '-c:a', 'copy',
         ]
-        
-        # Обработка аудио в зависимости от указанного кодека
-        if self.audio_codec == 'libopus':
-            cmd.extend([
-                '-c:a', 'libopus',
-                '-b:a', '128k',
-                '-application', 'audio'
-            ])
-        else:
-            cmd.extend(['-c:a', 'copy'])
         
         # Добавляем параметр -shortest для ограничения длительности выходного видео
         # до длительности самого короткого входного потока (в нашем случае - основного видео)

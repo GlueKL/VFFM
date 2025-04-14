@@ -34,7 +34,6 @@ class AddVideo(BaseModule):
                 - end_time: Время окончания вставки в секундах
                 - loop: Зацикливать видео до конца основного (по умолчанию False)
                 - mute: Удалить звук из добавляемого видео (по умолчанию False)
-                - audio_codec: Аудио кодек (по умолчанию 'copy' - сохранить оригинальный)
         """
         super().__init__(params)
         
@@ -53,7 +52,6 @@ class AddVideo(BaseModule):
         self.end_time = params.get('end_time', None)
         self.loop = params.get('loop', False)
         self.mute = params.get('mute', False)
-        self.audio_codec = params.get('audio_codec', 'copy')
         
     def process(self, input_path: str, output_path: str):
         """
@@ -112,26 +110,17 @@ class AddVideo(BaseModule):
             cmd.extend(['-map', '0:a?'])
         else:
             # Иначе берем аудио из обоих видео
-            cmd.extend(['-map', '0:a?'])
+            cmd.extend(['-map', '0:a?', '-map', '1:a?'])
             
-        # Добавляем видеопоток и исключаем потоки данных
-        cmd.extend(['-map', '0:v', '-map', '-0:d'])
+        # Добавляем видеопоток с наложением и исключаем потоки данных
+        cmd.extend(['-map', '[outv]'])
         
         # Добавляем параметр -shortest для ограничения длительности выходного видео
         # до длительности самого короткого входного потока (в нашем случае - основного видео)
         cmd.extend(['-shortest'])
         
-        # Обработка аудио
-        if self.audio_codec == 'libopus':
-            # Если указан Opus, используем специфичные параметры
-            cmd.extend([
-                '-c:a', 'libopus',
-                '-b:a', '128k',
-                '-application', 'audio'
-            ])
-        else:
-            # По умолчанию копируем оригинальный аудио поток без перекодирования
-            cmd.extend(['-c:a', 'copy'])
+        # Обработка аудио - всегда копируем, без перекодирования
+        cmd.extend(['-c:a', 'copy'])
         
         cmd.extend([
             output_path,
@@ -217,7 +206,7 @@ class AddVideo(BaseModule):
             enable_expr = ":enable='{0}*{1}'".format(start_expr, end_expr)
         
         # Итоговое наложение
-        filter_parts.append("[0:v][overlay]overlay={0}{1}".format(position_str, enable_expr))
+        filter_parts.append("[0:v][overlay]overlay={0}{1}[outv]".format(position_str, enable_expr))
         
         return ";".join(filter_parts)
     

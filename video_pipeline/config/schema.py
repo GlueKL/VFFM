@@ -52,10 +52,6 @@ MODULE_SCHEMAS = {
             },
             "keep_aspect_ratio": {
                 "type": "boolean"
-            },
-            "audio_codec": {
-                "type": "string",
-                "enum": ["copy", "libopus"]
             }
         }
     },
@@ -77,10 +73,6 @@ MODULE_SCHEMAS = {
             "scale": {
                 "type": "number",
                 "minimum": 0.1
-            },
-            "audio_codec": {
-                "type": "string",
-                "enum": ["copy", "libopus"]
             }
         },
         "required": ["image_path"]
@@ -111,10 +103,6 @@ MODULE_SCHEMAS = {
             "y": {
                 "type": "integer",
                 "minimum": 0
-            },
-            "audio_codec": {
-                "type": "string",
-                "enum": ["copy", "libopus"]
             }
         }
     },
@@ -138,10 +126,6 @@ MODULE_SCHEMAS = {
             },
             "image_path": {
                 "type": "string"
-            },
-            "audio_codec": {
-                "type": "string",
-                "enum": ["copy", "libopus"]
             }
         },
         "required": ["width", "height"]
@@ -234,10 +218,6 @@ MODULE_SCHEMAS = {
             "scale": {
                 "type": "number",
                 "minimum": 0.1
-            },
-            "audio_codec": {
-                "type": "string",
-                "enum": ["copy", "libopus"]
             },
             "mute_overlay": {
                 "type": "boolean"

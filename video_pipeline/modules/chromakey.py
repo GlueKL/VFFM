@@ -31,7 +31,6 @@ class Chromakey(BaseModule):
                 - width: Ширина накладываемого видео
                 - height: Высота накладываемого видео
                 - scale: Масштаб накладываемого видео
-                - audio_codec: Аудио кодек (copy - сохранить оригинальный, libopus - перекодировать в Opus)
                 - mute_overlay: Удалить звук из видео с зеленым экраном (по умолчанию True)
         """
         super().__init__(params)
@@ -59,7 +58,6 @@ class Chromakey(BaseModule):
         self.scale = params.get('scale', 1.0)
         
         # Параметры для аудио
-        self.audio_codec = params.get('audio_codec', 'copy')
         self.mute_overlay = params.get('mute_overlay', True)
         
     def process(self, input_path: str, output_path: str):
@@ -92,18 +90,11 @@ class Chromakey(BaseModule):
             # Иначе берем аудио из обоих видео
             cmd.extend(['-map', '0:a?', '-map', '1:a?'])
             
-        # Добавляем видеопоток и исключаем потоки данных
-        cmd.extend(['-map', '[out]', '-map', '-0:d'])
+        # Добавляем видеопоток
+        cmd.extend(['-map', '[out]'])
         
-        # Обработка аудио в зависимости от указанного кодека
-        if self.audio_codec == 'libopus':
-            cmd.extend([
-                '-c:a', 'libopus',
-                '-b:a', '128k',
-                '-application', 'audio'
-            ])
-        else:
-            cmd.extend(['-c:a', 'copy'])
+        # Обработка аудио
+        cmd.extend(['-c:a', 'copy'])
             
         cmd.extend([
             output_path,

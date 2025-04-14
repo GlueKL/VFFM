@@ -26,7 +26,6 @@ class Pad(BaseModule):
                 - position: Положение оригинального видео (center, top, bottom, left, right, center_left, center_right)
                 - color: Цвет пустой области в формате hex (по умолчанию "black")
                 - image_path: Путь к изображению для заполнения фона (имеет приоритет над color)
-                - audio_codec: Аудио кодек (по умолчанию 'copy' - сохранить оригинальный)
         """
         super().__init__(params)
         self.width = params.get('width', 1920)
@@ -34,7 +33,6 @@ class Pad(BaseModule):
         self.position = params.get('position', 'center')
         self.color = params.get('color', 'black')
         self.image_path = params.get('image_path', None)
-        self.audio_codec = params.get('audio_codec', 'copy')
         
         # Проверяем существование изображения, если оно указано
         if self.image_path and not os.path.exists(self.image_path):
@@ -78,18 +76,9 @@ class Pad(BaseModule):
             '-threads', '8',
             '-map', '0:v',           # Явно указываем, что берем видеопоток
             '-map', '0:a?',          # Явно указываем, что копируем аудиопоток, если он есть
+            '-c:a', 'copy',
         ]
         
-        # Обработка аудио в зависимости от указанного кодека
-        if self.audio_codec == 'libopus':
-            cmd.extend([
-                '-c:a', 'libopus',
-                '-b:a', '128k',
-                '-application', 'audio'
-            ])
-        else:
-            cmd.extend(['-c:a', 'copy'])
-            
         cmd.extend([
             output_path,
             '-y'  # Перезаписать выходной файл, если существует
@@ -131,18 +120,9 @@ class Pad(BaseModule):
             '-preset', 'fast',
             '-threads', '8',
             '-map', '0:a?',          # Копируем аудио из основного видео, если оно есть
+            '-c:a', 'copy',
         ]
         
-        # Обработка аудио в зависимости от указанного кодека
-        if self.audio_codec == 'libopus':
-            cmd.extend([
-                '-c:a', 'libopus',
-                '-b:a', '128k',
-                '-application', 'audio'
-            ])
-        else:
-            cmd.extend(['-c:a', 'copy'])
-            
         cmd.extend([
             output_path,
             '-y'  # Перезаписать выходной файл, если существует

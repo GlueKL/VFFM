@@ -24,13 +24,11 @@ class Resize(BaseModule):
                 - width: Ширина видео в пикселях
                 - height: Высота видео в пикселях
                 - keep_aspect_ratio: Сохранять пропорции (по умолчанию True)
-                - audio_codec: Аудио кодек (по умолчанию 'copy' - сохранить оригинальный)
         """
         super().__init__(params)
         self.width = params.get('width', 1280)
         self.height = params.get('height', 720)
         self.keep_aspect_ratio = params.get('keep_aspect_ratio', True)
-        self.audio_codec = params.get('audio_codec', 'copy')
         
     def process(self, input_path: str, output_path: str):
         """
@@ -56,22 +54,10 @@ class Resize(BaseModule):
             '-threads', '8',         
             '-map', '0:v',           # Явно указываем, что берем видеопоток
             '-map', '0:a?',          # Явно указываем, что копируем аудиопоток, если он есть
-        ]
-        
-        # Обработка аудио в зависимости от указанного кодека
-        if self.audio_codec == 'libopus':
-            cmd.extend([
-                '-c:a', 'libopus',
-                '-b:a', '128k',
-                '-application', 'audio'
-            ])
-        else:
-            cmd.extend(['-c:a', 'copy'])
-            
-        cmd.extend([
+            '-c:a', 'copy',
             output_path,
             '-y'  # Перезаписать выходной файл, если существует
-        ])
+        ]
         
         logger.debug(f"Выполнение команды: {' '.join(cmd)}")
         

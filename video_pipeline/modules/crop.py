@@ -19,7 +19,6 @@ class Crop(BaseModule):
         self.x = params.get('x', 0)
         self.y = params.get('y', 0)
         self.position = params.get('position', 'none')
-        self.audio_codec = params.get('audio_codec', 'copy')
 
     def process(self, input_path: str, output_path: str):
         if not os.path.exists(input_path):
@@ -33,18 +32,9 @@ class Crop(BaseModule):
             '-preset', 'fast',
             '-threads', '8',
             '-vf', self._get_filter_complex(),
+            '-c:a', 'copy'
         ]
         
-        # Обработка аудио в зависимости от указанного кодека
-        if self.audio_codec == 'libopus':
-            cmd.extend([
-                '-c:a', 'libopus',
-                '-b:a', '128k',
-                '-application', 'audio'
-            ])
-        else:
-            cmd.extend(['-c:a', 'copy'])
-            
         cmd.extend([
             output_path,
             '-y'  # Перезаписать выходной файл, если существует
