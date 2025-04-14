@@ -22,8 +22,9 @@ class Prepareforyt(BaseModule):
         cmd = [
             'ffmpeg',
             '-i', input_path,
-            '-map', '0:v',    # Все видео-потоки из входного файла
-            '-map', '0:a?',   # Все аудио-потоки (если есть)
+            '-filter_complex', '[0:v]concat=n=1:v=1[outv]',  # Сведение всех видео-потоков в один
+            '-map', '[outv]',  # Использовать объединенный видео-поток
+            '-map', '0:a?',    # Использовать все аудио-потоки (если есть)
             '-c:v', 'libx264',
             '-profile:v', 'high',
             '-level:v', '4.0',
@@ -42,8 +43,8 @@ class Prepareforyt(BaseModule):
         
         try:
             subprocess.run(cmd, check=True, capture_output=True)
-            logger.info(f"Аудио удалено: {input_path} -> {output_path}")
+            logger.info(f"Видео обработано: {input_path} -> {output_path}")
         except subprocess.CalledProcessError as e:
-            logger.error(f"Ошибка при удалении аудио: {e.stderr.decode()}")
+            logger.error(f"Ошибка при обработке видео: {e.stderr.decode()}")
             raise
             
