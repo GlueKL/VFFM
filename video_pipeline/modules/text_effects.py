@@ -57,9 +57,10 @@ class TextEffects(BaseModule):
         intensity = self.effect_intensity / 10.0  # Нормализация интенсивности
         
         if self.effect == 'shake':
-            amplitude = 10 * intensity
-            freq = 5 * intensity
-            return f"tremor=a={amplitude}:f={freq}"
+            # Используем фильтры crop и pad с динамическими значениями для создания эффекта тряски
+            amplitude = int(5 * intensity)  # Амплитуда тряски в пикселях
+            freq = 10 * intensity           # Частота тряски
+            return f"crop=iw-{amplitude}*2:ih-{amplitude}*2:{amplitude}+{amplitude}*sin(t*{freq}):{amplitude}+{amplitude}*cos(t*{freq})"
         
         elif self.effect == 'wave':
             amplitude = 20 * intensity
@@ -75,10 +76,22 @@ class TextEffects(BaseModule):
             return f"fade=t=in:st={self.start_time}:d=1,fade=t=out:st={self.start_time + self.duration - 1}:d=1"
             
         elif self.effect == 'glow':
-            intensity = 2 * self.effect_intensity
-            return f"gblur=sigma={intensity},colorbalance=gh=1:bh=1"
+            glow_intensity = 2 * self.effect_intensity
+            return f"gblur=sigma={glow_intensity},colorbalance=gh=1:bh=1"
             
         return "null"
+
+    def _get_shake_params(self) -> tuple:
+        """
+        Получение параметров для эффекта тряски.
+        
+        Returns:
+            tuple: (amplitude, freq) - амплитуда и частота тряски
+        """
+        intensity = self.effect_intensity / 10.0  # Нормализация интенсивности
+        amplitude = int(5 * intensity)  # Амплитуда тряски в пикселях
+        freq = 10 * intensity           # Частота тряски
+        return amplitude, freq
 
     def _get_position_string(self) -> str:
         """
@@ -123,12 +136,6 @@ class TextEffects(BaseModule):
             f"borderw={self.outline_width}"
         )
         
-        # Добавляем эффект
-        effect_filter = self._get_effect_filter()
-        
-        # Формируем полный фильтр
-        filter_complex = f"[0:v]{text_filter},{effect_filter}[out]"
-        
         # Добавляем временные параметры, если указаны
         if self.start_time is not None or self.duration is not None:
             enable_expr = []
@@ -139,6 +146,24 @@ class TextEffects(BaseModule):
             
             if enable_expr:
                 text_filter += f":enable='{' * '.join(enable_expr)}'"
+        
+        # Формируем полный фильтр
+        if self.effect == 'shake':
+            # Для эффекта тряски создаем чистый слой для текста
+            amplitude, freq = self._get_shake_params()
+            
+            # Создаем чистый слой для текста
+            filter_complex = (
+                f"[0:v]split[base][tmp];"
+                f"[tmp]format=rgba,geq=lum=0:a=0[transparent];"
+                f"[transparent]{text_filter}[text];"
+                f"[text]format=rgba[text_alpha];"
+                f"[base][text_alpha]overlay=x='{amplitude}*sin(t*{freq})':y='{amplitude}*cos(t*{freq})':format=auto[out]"
+            )
+        else:
+            # Для других эффектов применяем фильтр к тексту
+            effect_filter = self._get_effect_filter()
+            filter_complex = f"[0:v]{text_filter},{effect_filter}[out]"
         
         # Команда FFmpeg
         cmd = [
