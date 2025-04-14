@@ -35,4 +35,8 @@ temp/
 
 # Файлы операционной системы
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Файлы конфигурации
+configs/
+example_config.yaml
