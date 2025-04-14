@@ -52,35 +52,38 @@ MODULE_SCHEMAS = {
             },
             "keep_aspect_ratio": {
                 "type": "boolean"
+            },
+            "audio_codec": {
+                "type": "string",
+                "enum": ["copy", "libopus"]
             }
         }
     },
     "watermark": {
         "type": "object",
-        "required": ["image_path"],
         "properties": {
             "image_path": {
                 "type": "string"
             },
             "position": {
                 "type": "string",
-                "enum": ["topleft", "topright", "bottomleft", "bottomright", "center"]
+                "enum": ["center", "top", "bottom", "left", "right", "topleft", "topright", "bottomleft", "bottomright"]
             },
             "opacity": {
                 "type": "number",
-                "minimum": 0,
-                "maximum": 1
+                "minimum": 0.0,
+                "maximum": 1.0
             },
             "scale": {
                 "type": "number",
-                "minimum": 0,
-                "maximum": 1
+                "minimum": 0.1
             },
             "audio_codec": {
                 "type": "string",
-                "description": "Аудио кодек (по умолчанию 'copy' - сохранить оригинальный)"
+                "enum": ["copy", "libopus"]
             }
-        }
+        },
+        "required": ["image_path"]
     },
     "deleteaudio": {
         "type": "object",
@@ -91,12 +94,28 @@ MODULE_SCHEMAS = {
         "properties": {
             "position": {
                 "type": "string",
-                "enum": ["none", "topleft", "topright", "bottomleft", "bottomright", "center"]
+                "enum": ["none", "center", "topleft", "topright", "bottomleft", "bottomright"]
             },
-            "width": {"type": "integer", "minimum": 1},
-            "height": {"type": "integer", "minimum": 1},
-            "x": {"type": "integer", "minimum": 0},
-            "y": {"type": "integer", "minimum": 0}
+            "width": {
+                "type": "integer",
+                "minimum": 1
+            },
+            "height": {
+                "type": "integer",
+                "minimum": 1
+            },
+            "x": {
+                "type": "integer",
+                "minimum": 0
+            },
+            "y": {
+                "type": "integer",
+                "minimum": 0
+            },
+            "audio_codec": {
+                "type": "string",
+                "enum": ["copy", "libopus"]
+            }
         }
     },
     "pad": {
@@ -112,27 +131,30 @@ MODULE_SCHEMAS = {
             },
             "position": {
                 "type": "string",
-                "enum": ["center", "top", "bottom", "left", "right", "center_left", "center_right"]
+                "enum": ["center", "top", "bottom", "left", "right", "topleft", "topright", "bottomleft", "bottomright"]
             },
             "color": {
                 "type": "string"
             },
             "image_path": {
                 "type": "string"
+            },
+            "audio_codec": {
+                "type": "string",
+                "enum": ["copy", "libopus"]
             }
-        }
+        },
+        "required": ["width", "height"]
     },
     "addvideo": {
         "type": "object",
-        "required": ["video_path"],
         "properties": {
             "video_path": {
                 "type": "string"
             },
             "position": {
                 "type": "string",
-                "enum": ["center", "top", "bottom", "left", "right", "center_left", "center_right", 
-                         "topleft", "topright", "bottomleft", "bottomright"]
+                "enum": ["center", "top", "bottom", "left", "right", "topleft", "topright", "bottomleft", "bottomright"]
             },
             "x": {
                 "type": "integer"
@@ -154,16 +176,16 @@ MODULE_SCHEMAS = {
             },
             "alpha": {
                 "type": "number",
-                "minimum": 0,
-                "maximum": 1
+                "minimum": 0.0,
+                "maximum": 1.0
             },
             "start_time": {
                 "type": "number",
-                "minimum": 0
+                "minimum": 0.0
             },
             "end_time": {
                 "type": "number",
-                "minimum": 0
+                "minimum": 0.0
             },
             "loop": {
                 "type": "boolean"
@@ -171,133 +193,147 @@ MODULE_SCHEMAS = {
             "mute": {
                 "type": "boolean"
             }
-        }
+        },
+        "required": ["video_path"]
     },
     "chromakey": {
         "type": "object",
-        "required": ["overlay"],
         "properties": {
             "color": {
-                "type": "string",
-                "description": "Цвет для удаления. Можно указать 'green' или в формате '#00FF00' или '0x00FF00'",
-                "default": "green"
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
             },
             "similarity": {
-                "type": "number",
-                "description": "Уровень схожести с выбранным цветом",
-                "minimum": 0.0,
-                "maximum": 1.0,
-                "default": 0.1
+                "type": "array",
+                "items": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                }
             },
             "blend": {
-                "type": "number",
-                "description": "Степень смешивания краев",
-                "minimum": 0.0,
-                "maximum": 1.0,
-                "default": 0.0
+                "type": "array",
+                "items": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                }
+            },
+            "yuv": {
+                "type": "boolean"
             },
             "overlay": {
-                "type": "string",
-                "description": "Путь к видео с зеленым экраном"
+                "type": "string"
             },
             "position": {
                 "type": "string",
-                "description": "Положение накладываемого видео",
-                "enum": ["center", "top", "bottom", "left", "right", "center_left", "center_right", 
-                        "topleft", "topright", "bottomleft", "bottomright"],
-                "default": "center"
-            },
-            "x": {
-                "type": ["number", "null"],
-                "description": "Смещение по оси X (игнорируется если указан position)",
-                "default": None
-            },
-            "y": {
-                "type": ["number", "null"],
-                "description": "Смещение по оси Y (игнорируется если указан position)",
-                "default": None
-            },
-            "width": {
-                "type": ["number", "null"],
-                "description": "Ширина накладываемого видео",
-                "default": None
-            },
-            "height": {
-                "type": ["number", "null"],
-                "description": "Высота накладываемого видео",
-                "default": None
+                "enum": ["center", "top", "bottom", "left", "right", "topleft", "topright", "bottomleft", "bottomright"]
             },
             "scale": {
                 "type": "number",
-                "description": "Масштаб накладываемого видео",
-                "minimum": 0.1,
-                "default": 1.0
+                "minimum": 0.1
             },
             "audio_codec": {
                 "type": "string",
-                "description": "Аудио кодек (copy - сохранить оригинальный, libopus - перекодировать в Opus)",
-                "enum": ["copy", "libopus"],
-                "default": "copy"
+                "enum": ["copy", "libopus"]
             },
             "mute_overlay": {
-                "type": "boolean",
-                "description": "Удалить звук из видео с зеленым экраном",
-                "default": True
+                "type": "boolean"
             }
         },
-        "description": "Модуль для удаления зеленого экрана и наложения на фоновое видео"
-    },
-    "cut": {
-        "type": "object",
-        "required": ["duration"],
-        "properties": {
-            "duration": {
-                "type": "number",
-                "description": "Длительность каждой части в секундах",
-                "minimum": 0.1
-            },
-            "output_dir": {
-                "type": "string",
-                "description": "Директория для сохранения частей",
-                "default": "parts"
-            },
-            "prefix": {
-                "type": "string",
-                "description": "Префикс для имен файлов",
-                "default": "part_"
-            }
-        }
-    },
-    "utility.prepareforyt": {
-        "type": "object",
-        "properties": {}
+        "required": ["overlay"]
     },
     "utility.cut": {
         "type": "object",
         "properties": {
             "duration": {
                 "type": "number",
-                "minimum": 0.1,
-                "description": "Длительность каждой части в секундах"
+                "minimum": 0.1
             },
             "output_dir": {
-                "type": "string",
-                "default": "parts",
-                "description": "Директория для сохранения частей"
+                "type": "string"
             },
             "prefix": {
-                "type": "string",
-                "default": "part_",
-                "description": "Префикс для имен файлов частей"
+                "type": "string"
             },
             "use_input_name": {
-                "type": "boolean",
-                "default": False,
-                "description": "Использовать имя входного файла как префикс"
+                "type": "boolean"
             }
         },
         "required": ["duration"],
         "description": "Модуль для нарезки видео на равные части"
+    },
+    "utility.prepareforyt": {
+        "type": "object",
+        "properties": {},
+        "description": "Модуль для подготовки видео к загрузке на YouTube"
+    },
+    "text_effects": {
+        "type": "object",
+        "properties": {
+            "text": {
+                "type": "string",
+                "description": "Текст для добавления"
+            },
+            "font": {
+                "type": "string",
+                "description": "Путь к файлу шрифта (TTF)"
+            },
+            "font_size": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Размер шрифта"
+            },
+            "color": {
+                "type": "string",
+                "description": "Цвет текста"
+            },
+            "position": {
+                "type": "string",
+                "enum": ["center", "top", "bottom", "left", "right", "topleft", "topright", "bottomleft", "bottomright"],
+                "description": "Позиция текста"
+            },
+            "x": {
+                "type": "integer",
+                "description": "Смещение по X (если нужно точное позиционирование)"
+            },
+            "y": {
+                "type": "integer",
+                "description": "Смещение по Y (если нужно точное позиционирование)"
+            },
+            "effect": {
+                "type": "string",
+                "enum": ["shake", "wave", "rotate", "fade", "glow"],
+                "description": "Тип эффекта"
+            },
+            "effect_intensity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10,
+                "description": "Интенсивность эффекта (1-10)"
+            },
+            "start_time": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Время появления текста (в секундах)"
+            },
+            "duration": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Длительность показа текста (в секундах)"
+            },
+            "outline_color": {
+                "type": "string",
+                "description": "Цвет обводки"
+            },
+            "outline_width": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Толщина обводки"
+            }
+        }
     }
 }
 

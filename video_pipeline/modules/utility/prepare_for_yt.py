@@ -7,7 +7,7 @@ from video_pipeline.modules.base import BaseModule
 
 logger = logging.getLogger(__name__)
 
-class Prepareforyt(BaseModule):
+class PrepareForYt(BaseModule):
 
     
     def __init__(self, params: Dict[str, Any]):
@@ -22,9 +22,8 @@ class Prepareforyt(BaseModule):
         cmd = [
             'ffmpeg',
             '-i', input_path,
-            '-filter_complex', '[0:v]concat=n=1:v=1[outv]',  # Сведение всех видео-потоков в один
-            '-map', '[outv]',  # Использовать объединенный видео-поток
-            '-map', '0:a?',    # Использовать все аудио-потоки (если есть)
+            '-map', '0:v',    # Все видео-потоки из входного файла
+            '-map', '0:a?',   # Все аудио-потоки (если есть)
             '-c:v', 'libx264',
             '-profile:v', 'high',
             '-level:v', '4.0',

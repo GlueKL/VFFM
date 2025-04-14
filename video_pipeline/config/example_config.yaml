@@ -1,61 +1,80 @@
-input: input.mp4
-output: output.mp4
+input: "input.mp4"
+output: "output.mp4"
 modules:
-- name: resize
+- name: "resize"
   params:
-    width: 100
-    height: 100
-    keep_aspect_ratio: false
-- name: watermark
+    width: 1920
+    height: 1080
+    keep_aspect_ratio: true
+    audio_codec: "copy"
+- name: "watermark"
   params:
-    image_path: example_image_path
-    position: example_position
-    opacity: 1.0
-    scale: 1.0
-    audio_codec: example_audio_codec
-- name: deleteaudio
+    image_path: "watermark.png"
+    position: "bottomright"
+    opacity: 0.7
+    scale: 0.2
+    audio_codec: "copy"
+- name: "deleteaudio"
   params: {}
-- name: crop
+- name: "crop"
   params:
-    position: example_position
-    width: 100
-    height: 100
-    x: 100
-    y: 100
-- name: pad
+    position: "center"
+    width: 1280
+    height: 720
+    x: 0
+    y: 0
+    audio_codec: "copy"
+- name: "pad"
   params:
-    width: 100
-    height: 100
-    position: example_position
-    color: example_color
-    image_path: example_image_path
-- name: addvideo
+    width: 1920
+    height: 1080
+    position: "center"
+    color: "black"
+    image_path: "background.jpg"
+    audio_codec: "copy"
+- name: "addvideo"
   params:
-    video_path: example_video_path
-    position: example_position
-    x: 100
-    y: 100
-    width: 100
-    height: 100
+    video_path: "overlay.mp4"
+    position: "center"
+    x: 0
+    y: 0
+    width: 640
+    height: 360
     scale: 1.0
     alpha: 1.0
-    start_time: 1.0
-    end_time: 1.0
+    start_time: 0
+    end_time: 5
     loop: false
-    mute: false
-- name: chromakey
+    mute: true
+- name: "chromakey"
   params:
-    color: ['green', 'blue']
-    similarity: [0.1, 0.15]
-    blend: [0.0, 0.1]
-    yuv: true
-    overlay: green_screen.mp4
-    position: center
+    color: ["green"]
+    similarity: [0.1]
+    blend: [0.0]
+    yuv: false
+    overlay: "greenscreen.mp4"
+    position: "center"
     scale: 1.0
-    audio_codec: copy
+    audio_codec: "copy"
     mute_overlay: true
-- name: cut
+- name: "utility.cut"
   params:
-    duration: 1.0
-    output_dir: parts
-    prefix: part_
+    duration: 60
+    output_dir: "parts"
+    prefix: "part_"
+    use_input_name: false
+- name: "utility.prepareforyt"
+  params: {}
+- name: "text_effects"
+  params:
+    text: "Привет, мир!"
+    font: "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    font_size: 72
+    color: "white"
+    position: "center"
+    effect: "shake"
+    effect_intensity: 7
+    start_time: 2
+    duration: 5
+    outline_color: "black"
+    outline_width: 3

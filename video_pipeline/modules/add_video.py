@@ -10,7 +10,7 @@ from video_pipeline.modules.base import BaseModule
 
 logger = logging.getLogger(__name__)
 
-class Addvideo(BaseModule):
+class AddVideo(BaseModule):
     """
     Модуль для добавления видео поверх основного с помощью FFmpeg.
     """
@@ -102,7 +102,7 @@ class Addvideo(BaseModule):
         cmd.extend([
             '-filter_complex', filter_complex,
             '-c:v', 'libx264',  
-            '-preset', 'fast'
+            '-preset', 'fast',
             '-threads', '8'
         ])
         

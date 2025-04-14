@@ -55,17 +55,44 @@ class Pipeline:
                 raise ValueError("Module must have a name")
                 
             try:
-                # Dynamically import module
-                module_path = f"video_pipeline.modules.{module_name}"
+                # Разбиваем имя модуля на части
+                module_parts = module_name.split('.')
+                
+                # Формируем путь к модулю
+                if len(module_parts) > 1:
+                    # Если есть подмодуль (например, utility.prepare_for_yt)
+                    module_path = f"video_pipeline.modules.{module_parts[0]}.{module_parts[1]}"
+                else:
+                    # Если модуль в корневой директории
+                    module_path = f"video_pipeline.modules.{module_name}"
+                
+                # Импортируем модуль
                 module = import_module(module_path)
                 
-                # Get the last part of the module name for class name
-                class_name = module_name.split('.')[-1].capitalize()
+                # Получаем последнюю часть имени для поиска класса
+                last_part = module_parts[-1]
                 
-                # Create module class instance
-                module_class = getattr(module, class_name)
+                # Пробуем разные варианты имени класса
+                class_variants = [
+                    last_part.capitalize(),  # prepareforyt -> Prepareforyt
+                    last_part,  # Оставить как есть (если в конфиге указано правильно)
+                    # Convert snake_case to CamelCase
+                    ''.join(x.capitalize() or '_' for x in last_part.split('_'))  # prepare_for_yt -> PrepareForYt
+                ]
+                
+                # Пробуем каждый вариант
+                module_class = None
+                for variant in class_variants:
+                    try:
+                        module_class = getattr(module, variant)
+                        break
+                    except AttributeError:
+                        continue
+                        
+                if module_class is None:
+                    raise AttributeError(f"Could not find class for module {module_name}")
+                    
                 module_instance = module_class(module_config.get('params', {}))
-                
                 self.modules.append(module_instance)
                 logger.info(f"Module {module_name} loaded successfully")
             except (ImportError, AttributeError) as e:

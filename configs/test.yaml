@@ -4,7 +4,7 @@ output: "workspace/test/output.mp4"
 
 # Список модулей обработки (применяются последовательно)
 modules:
-  - name: "utility.prepareforyt"
+  - name: "utility.prepare_for_yt"
 
 
 

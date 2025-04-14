@@ -7,7 +7,7 @@ from video_pipeline.modules.base import BaseModule
 
 logger = logging.getLogger(__name__)
 
-class Deleteaudio(BaseModule):
+class DeleteAudio(BaseModule):
 
     
     def __init__(self, params: Dict[str, Any]):
