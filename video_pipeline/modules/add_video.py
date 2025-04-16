@@ -38,8 +38,7 @@ class AddVideo(BaseModule):
         super().__init__(params)
         
         self.video_path = params.get('video_path')
-        if not self.video_path or not os.path.exists(self.video_path):
-            raise ValueError(f"Видеофайл для вставки не найден: {self.video_path}")
+        
             
         self.position = params.get('position', 'center')
         self.x = params.get('x', None)
@@ -61,6 +60,8 @@ class AddVideo(BaseModule):
             input_path: Путь к входному видео
             output_path: Путь к выходному видео
         """
+        if not self.video_path or not os.path.exists(self.video_path):
+            raise ValueError(f"Видеофайл для вставки не найден: {self.video_path}")
         if not os.path.exists(input_path):
             raise FileNotFoundError(f"Входной файл не найден: {input_path}")
             

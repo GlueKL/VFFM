@@ -1,0 +1,84 @@
+input: input.mp4
+output: output.mp4
+modules:
+- name: resize
+  params:
+    width: 100
+    height: 100
+    keep_aspect_ratio: false
+- name: watermark
+  params:
+    image_path: example_image_path
+    position: example_position
+    opacity: 1.0
+    scale: 1.0
+- name: deleteaudio
+  params: {}
+- name: crop
+  params:
+    position: example_position
+    width: 100
+    height: 100
+    x: 100
+    y: 100
+- name: pad
+  params:
+    width: 100
+    height: 100
+    position: example_position
+    color: example_color
+    image_path: example_image_path
+- name: addvideo
+  params:
+    video_path: example_video_path
+    position: example_position
+    x: 100
+    y: 100
+    width: 100
+    height: 100
+    scale: 1.0
+    alpha: 1.0
+    start_time: 1.0
+    end_time: 1.0
+    loop: false
+    mute: false
+- name: chromakey
+  params:
+    color: []
+    similarity: []
+    blend: []
+    yuv: false
+    overlay: example_overlay
+    position: example_position
+    scale: 1.0
+    mute_overlay: false
+- name: utility.cut
+  params:
+    duration: 1.0
+    output_dir: example_output_dir
+    prefix: example_prefix
+    use_input_name: false
+- name: utility.prepareforyt
+  params: {}
+- name: text_effects
+  params:
+    text: example_text
+    font: example_font
+    font_size: 100
+    color: example_color
+    position: example_position
+    x: 100
+    y: 100
+    effect: example_effect
+    effect_intensity: 100
+    start_time: 1.0
+    duration: 1.0
+    outline_color: example_outline_color
+    outline_width: 100
+- name: utility.module_wrapper
+  params:
+    module_name: example_module_name
+    module_params: {}
+    custom_input: example_custom_input
+    custom_output: example_custom_output
+    copy_to_pipeline: false
