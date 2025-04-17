@@ -27,18 +27,24 @@ def setup_logger(log_level: str = "INFO", log_file: Optional[str] = None) -> log
     logger.setLevel(numeric_level)
     logger.handlers = []  # Clear handlers to avoid duplication
     
-    # Log format
-    formatter = logging.Formatter(
+    # Формат для файла логов (подробный)
+    file_formatter = logging.Formatter(
         "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
     
-    # Console handler
+    # Формат для консоли (компактный)
+    console_formatter = logging.Formatter(
+        "%(message)s"
+    )
+    
+    # Console handler (только важные сообщения)
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(formatter)
+    console_handler.setFormatter(console_formatter)
+    console_handler.setLevel(logging.WARNING)  # В консоль только WARNING и выше
     logger.addHandler(console_handler)
     
-    # File handler (if specified)
+    # File handler (все сообщения)
     if log_file:
         # Create log directory if it doesn't exist
         log_dir = os.path.dirname(log_file)
@@ -46,7 +52,8 @@ def setup_logger(log_level: str = "INFO", log_file: Optional[str] = None) -> log
             os.makedirs(log_dir)
             
         file_handler = logging.FileHandler(log_file, encoding="utf-8")
-        file_handler.setFormatter(formatter)
+        file_handler.setFormatter(file_formatter)
+        file_handler.setLevel(numeric_level)  # В файл все сообщения
         logger.addHandler(file_handler)
     
     return logger 

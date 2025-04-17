@@ -13,8 +13,8 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
 
 setup(
     name="video_pipeline",
-    version="0.1.0",
-    author="Video Pipeline Team",
+    version="0.9.8",
+    author="GlueK",
     author_email="example@example.com",
     description="Модульный конвейер обработки видео на Python",
     long_description=long_description,

@@ -7,6 +7,7 @@ import logging
 import sys
 from typing import Dict, List, Any, Optional
 from importlib import import_module
+from tqdm import tqdm
 
 from video_pipeline.utils.ffmpeg import check_ffmpeg_installed
 
@@ -138,16 +139,26 @@ class Pipeline:
         temp_input = input_file
         
         # Apply modules sequentially
-        for i, module in enumerate(self.modules):
-            is_last_module = i == len(self.modules) - 1
-            temp_output = output_file if is_last_module else f"temp_{i}.mp4"
-            
-            logger.info(f"Applying module {module.__class__.__name__}")
-            module.process(temp_input, temp_output)
-            
-            # If not the last module, update input file for the next one
-            if not is_last_module:
-                temp_input = temp_output
+        logger.info(f"Запуск обработки видео - {len(self.modules)} модулей")
+        
+        # Создаем прогресс-бар с tqdm
+        with tqdm(total=len(self.modules), desc="Обработка видео", bar_format="{l_bar}{bar:30}{r_bar}", colour="green") as pbar:
+            for i, module in enumerate(self.modules):
+                # Обновляем описание прогресс-бара с именем текущего модуля
+                pbar.set_description(f"Модуль: {module.__class__.__name__}")
+                
+                is_last_module = i == len(self.modules) - 1
+                temp_output = output_file if is_last_module else f"temp_{i}.mp4"
+                
+                logger.info(f"Applying module {module.__class__.__name__}")
+                module.process(temp_input, temp_output)
+                
+                # If not the last module, update input file for the next one
+                if not is_last_module:
+                    temp_input = temp_output
+                
+                # Обновляем прогресс после обработки модуля
+                pbar.update(1)
                 
         logger.info(f"Processing complete. Result saved to {output_file}")
         
