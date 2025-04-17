@@ -9,12 +9,12 @@ get_dominant_color() {
     local temp_dir="workspace/velosiped/temp"
     mkdir -p "$temp_dir"
     
-    # Извлекаем кадр из середины видео
+    # Извлекаем кадр из начала видео
     local duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$video")
-    local middle_time=$(echo "$duration / 2" | bc -l)
+    local start_time=1
     local temp_frame="$temp_dir/temp_frame.png"
     
-    ffmpeg -ss "$middle_time" -i "$video" -vframes 1 -f image2 "$temp_frame" -y 2>/dev/null
+    ffmpeg -ss "$start_time" -i "$video" -vframes 1 -f image2 "$temp_frame" -y 2>/dev/null
     
     # Получаем цвет в конкретной точке (40, 40)
     local color=$(convert "$temp_frame" -format "%[pixel:p{40,40}]" info:-)
@@ -67,6 +67,11 @@ for ((i=0; i<${#inputs[@]}; i++)); do
     
     echo "Обработка $input_name с футажем $footage_name"
     
+
+    # Определяем длительность футажа
+    duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$footage" | awk -F. '{print $1"."substr($2,1,1)}')
+    echo "Длительность футажа: $duration секунд"
+
     # Определяем цвет фона для футажа по координате (40, 40)
     echo "Определяем цвет фона по координате (40, 40)..."
     background_color=$(get_dominant_color "$footage")
@@ -81,6 +86,11 @@ output: "workspace/velosiped/output.mp4"
 modules:
   - name: utility.prepare_for_yt
   - name: delete_audio
+  - name: cut_video
+    params:
+      start: 0
+      duration: "$duration"
+      accurate: true
   - name: resize
     params:
       width: 1920
@@ -97,8 +107,8 @@ modules:
   - name: chromakey 
     params:
       color: "$background_color"
-      similarity: 0.1
-      blend: 0.5
+      similarity: 0.02
+      blend: 0.4
       overlay: "workspace/velosiped/working_footage.mp4"
       position: "center"
       width: 1080

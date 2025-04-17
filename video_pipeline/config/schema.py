@@ -345,6 +345,26 @@ MODULE_SCHEMAS = {
         },
         "required": ["module_name", "custom_input", "custom_output"],
         "description": "Модуль для вызова других модулей напрямую, может работать изолированно от основного конвейера"
+    },
+    "cut_video": {
+        "type": "object",
+        "properties": {
+            "start": {
+                "type": "number",
+                "minimum": 0.0,
+                "description": "Время начала фрагмента в секундах"
+            },
+            "duration": {
+                "type": "number",
+                "minimum": 0.1,
+                "description": "Длительность фрагмента в секундах"
+            },
+            "accurate": {
+                "type": "boolean",
+                "description": "Использовать точное обрезание (с перекодированием)"
+            }
+        },
+        "description": "Модуль для обрезки видео по времени (извлечения определенного фрагмента)"
     }
 }
 
